@@ -28,6 +28,8 @@ import net.minecraft.util.Mth;
 import org.shipwrights.cannonical.network.CannonicalNetwork;
 import org.shipwrights.cannonical.registry.ModEntityTypes;
 import org.shipwrights.cannonical.registry.ModItems;
+import org.shipwrights.krakk.api.KrakkApi;
+import org.shipwrights.krakk.api.damage.KrakkImpactResult;
 
 public class CannonballProjectileEntity extends ThrowableItemProjectile {
     private static final EntityDataAccessor<Float> DATA_SYNC_VX =
@@ -203,13 +205,13 @@ public class CannonballProjectileEntity extends ThrowableItemProjectile {
         BlockState state = this.level().getBlockState(hitResult.getBlockPos());
         if (state.isAir()) {
             if (!this.level().isClientSide) {
-                CannonBlockDamageSystem.clearDamage((ServerLevel) this.level(), hitResult.getBlockPos());
+                KrakkApi.damage().clearDamage((ServerLevel) this.level(), hitResult.getBlockPos());
             }
             return;
         }
 
         if (!this.level().isClientSide && !this.level().getFluidState(hitResult.getBlockPos()).isEmpty()) {
-            CannonBlockDamageSystem.clearDamage((ServerLevel) this.level(), hitResult.getBlockPos());
+            KrakkApi.damage().clearDamage((ServerLevel) this.level(), hitResult.getBlockPos());
             this.applySpeedLoss(1.0D - FLUID_SPEED_MULTIPLIER, false, null);
             this.updateDeathMarkFromSpeed();
             this.syncMotionFromServer(true);
@@ -228,15 +230,15 @@ public class CannonballProjectileEntity extends ThrowableItemProjectile {
             double speedLoss = this.computeBlockSpeedLoss(resistance, hardness);
 
             if (!unbreakable) {
-                CannonBlockDamageSystem.ImpactResult impactResult = CannonBlockDamageSystem.applyImpact(
-                        serverLevel, hitResult.getBlockPos(), state, this, impactPower);
+                KrakkImpactResult impactResult = KrakkApi.damage().applyImpact(
+                        serverLevel, hitResult.getBlockPos(), state, this, impactPower, true);
                 if (impactResult.broken()) {
                     this.applyBlockPenetrationResponse(speedLoss, hitResult);
                 } else {
                     this.applyBlockCollisionResponse(speedLoss, hitResult, 0.08D);
                 }
             } else {
-                CannonBlockDamageSystem.clearDamage(serverLevel, hitResult.getBlockPos());
+                KrakkApi.damage().clearDamage(serverLevel, hitResult.getBlockPos());
                 this.applyBlockCollisionResponse(speedLoss, hitResult, 0.08D);
             }
 

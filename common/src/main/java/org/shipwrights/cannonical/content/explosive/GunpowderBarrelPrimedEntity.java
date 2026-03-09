@@ -8,6 +8,7 @@ import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.item.PrimedTnt;
 import net.minecraft.world.level.Level;
 import org.shipwrights.cannonical.registry.ModEntityTypes;
+import org.shipwrights.krakk.api.KrakkApi;
 
 public class GunpowderBarrelPrimedEntity extends PrimedTnt {
     private LivingEntity barrelOwner;
@@ -46,13 +47,14 @@ public class GunpowderBarrelPrimedEntity extends PrimedTnt {
         if (nextFuse <= 0) {
             this.discard();
             if (this.level() instanceof ServerLevel serverLevel) {
-                CannonicalExplosions.detonateGunpowderBarrel(
+                KrakkApi.explosions().detonate(
                         serverLevel,
                         this.getX(),
                         this.getY(),
                         this.getZ(),
                         this,
-                        this.barrelOwner
+                        this.barrelOwner,
+                        null
                 );
             }
         } else {

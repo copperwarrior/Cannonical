@@ -7,11 +7,6 @@
     "client.LevelRendererMixin"
   ],
   "mixins": [
-    "common.ChunkMapMixin",
-    "common.FallingBlockEntityMixin",
-    "common.LevelChunkMixin",
-    "common.LevelMixin",
-    "common.PistonMovingBlockEntityMixin",
     "common.ServerPlayerGameModeMixin"
   ],
   "injectors": {

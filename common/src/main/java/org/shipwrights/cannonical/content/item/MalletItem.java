@@ -19,7 +19,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import org.shipwrights.cannonical.Cannonical;
-import org.shipwrights.cannonical.content.projectile.CannonBlockDamageSystem;
+import org.shipwrights.krakk.api.KrakkApi;
 import org.shipwrights.cannonical.registry.ModEnchantments;
 
 public class MalletItem extends DiggerItem {
@@ -74,10 +74,10 @@ public class MalletItem extends DiggerItem {
         int centerRepairPower = this.rollRepairAmount(level, effectiveRepairPower);
 
         int repairedBlocks = 0;
-        int centerRepaired = centerRepairPower > 0 ? CannonBlockDamageSystem.repairDamage(level, blockPos, centerRepairPower) : 0;
+        int centerRepaired = centerRepairPower > 0 ? KrakkApi.damage().repairDamage(level, blockPos, centerRepairPower) : 0;
         if (centerRepaired > 0) {
             repairedBlocks++;
-            boolean fullyRepaired = CannonBlockDamageSystem.getMiningProgressFraction(level, blockPos) <= 0.0F;
+            boolean fullyRepaired = KrakkApi.damage().getMiningBaseline(level, blockPos) <= 0.0F;
             this.emitRepairFeedback(level, blockPos, blockState, centerRepaired, fullyRepaired);
         }
 
@@ -119,10 +119,10 @@ public class MalletItem extends DiggerItem {
                         continue;
                     }
 
-                    int repairedAmount = CannonBlockDamageSystem.repairDamage(level, mutablePos, repairAmount);
+                    int repairedAmount = KrakkApi.damage().repairDamage(level, mutablePos, repairAmount);
                     if (repairedAmount > 0) {
                         repairedBlocks++;
-                        boolean fullyRepaired = CannonBlockDamageSystem.getMiningProgressFraction(level, mutablePos) <= 0.0F;
+                        boolean fullyRepaired = KrakkApi.damage().getMiningBaseline(level, mutablePos) <= 0.0F;
                         this.emitRepairFeedback(level, mutablePos, nearbyState, repairedAmount, fullyRepaired);
                     }
                 }

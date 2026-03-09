@@ -1,7 +1,7 @@
 package org.shipwrights.cannonical.client;
 
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ByteOpenHashMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.shorts.Short2ByteMap;
@@ -15,10 +15,18 @@ public final class CannonBlockDamageOverlayState {
     private static final Long2ByteOpenHashMap DAMAGE_STATES = new Long2ByteOpenHashMap();
     private static final Long2ObjectOpenHashMap<LongOpenHashSet> DAMAGE_POSITIONS_BY_CHUNK = new Long2ObjectOpenHashMap<>();
     private static final Long2ObjectOpenHashMap<LongOpenHashSet> DAMAGE_POSITIONS_BY_SECTION = new Long2ObjectOpenHashMap<>();
+    private static final LongOpenHashSet DIRTY_SECTIONS = new LongOpenHashSet();
 
     private static ResourceLocation activeDimensionId = null;
 
     private CannonBlockDamageOverlayState() {
+    }
+
+    public static void resetClientState() {
+        synchronized (LOCK) {
+            clearAll();
+            activeDimensionId = null;
+        }
     }
 
     public static void apply(ResourceLocation dimensionId, long posLong, int damageState) {
@@ -44,6 +52,54 @@ public final class CannonBlockDamageOverlayState {
                 return new Long2ByteOpenHashMap();
             }
             return new Long2ByteOpenHashMap(DAMAGE_STATES);
+        }
+    }
+
+    public static int getDamageState(ResourceLocation dimensionId, long posLong) {
+        synchronized (LOCK) {
+            if (activeDimensionId == null || !activeDimensionId.equals(dimensionId)) {
+                return 0;
+            }
+            return Math.max(0, Math.min(15, DAMAGE_STATES.get(posLong)));
+        }
+    }
+
+    public static float getMiningProgressFraction(ResourceLocation dimensionId, long posLong) {
+        return getDamageState(dimensionId, posLong) / 15.0F;
+    }
+
+    public static Long2ByteOpenHashMap snapshotSection(ResourceLocation dimensionId, long sectionKey) {
+        synchronized (LOCK) {
+            if (activeDimensionId == null || !activeDimensionId.equals(dimensionId)) {
+                return new Long2ByteOpenHashMap();
+            }
+
+            LongOpenHashSet positions = DAMAGE_POSITIONS_BY_SECTION.get(sectionKey);
+            if (positions == null || positions.isEmpty()) {
+                return new Long2ByteOpenHashMap();
+            }
+
+            Long2ByteOpenHashMap snapshot = new Long2ByteOpenHashMap(positions.size());
+            LongIterator iterator = positions.iterator();
+            while (iterator.hasNext()) {
+                long posLong = iterator.nextLong();
+                int damageState = DAMAGE_STATES.get(posLong);
+                if (damageState > 0) {
+                    snapshot.put(posLong, (byte) damageState);
+                }
+            }
+            return snapshot;
+        }
+    }
+
+    public static long[] consumeDirtySections(ResourceLocation dimensionId) {
+        synchronized (LOCK) {
+            if (activeDimensionId == null || !activeDimensionId.equals(dimensionId) || DIRTY_SECTIONS.isEmpty()) {
+                return new long[0];
+            }
+            long[] sectionKeys = DIRTY_SECTIONS.toLongArray();
+            DIRTY_SECTIONS.clear();
+            return sectionKeys;
         }
     }
 
@@ -106,6 +162,8 @@ public final class CannonBlockDamageOverlayState {
                 long posLong = BlockPos.asLong(blockX, blockY, blockZ);
                 putDamageState(posLong, (byte) clampedState);
             }
+
+            DIRTY_SECTIONS.add(sectionKey);
         }
     }
 
@@ -132,10 +190,17 @@ public final class CannonBlockDamageOverlayState {
         DAMAGE_STATES.clear();
         DAMAGE_POSITIONS_BY_CHUNK.clear();
         DAMAGE_POSITIONS_BY_SECTION.clear();
+        DIRTY_SECTIONS.clear();
     }
 
     private static void putDamageState(long posLong, byte damageState) {
         byte previous = DAMAGE_STATES.put(posLong, damageState);
+        if (previous == damageState) {
+            return;
+        }
+
+        long sectionKey = toSectionKeyFromPos(posLong);
+        DIRTY_SECTIONS.add(sectionKey);
         if (previous > 0) {
             return;
         }
@@ -148,7 +213,6 @@ public final class CannonBlockDamageOverlayState {
         }
         chunkPositions.add(posLong);
 
-        long sectionKey = toSectionKeyFromPos(posLong);
         LongOpenHashSet sectionPositions = DAMAGE_POSITIONS_BY_SECTION.get(sectionKey);
         if (sectionPositions == null) {
             sectionPositions = new LongOpenHashSet();
@@ -163,25 +227,24 @@ public final class CannonBlockDamageOverlayState {
             return;
         }
 
+        long sectionKey = toSectionKeyFromPos(posLong);
+        DIRTY_SECTIONS.add(sectionKey);
+
         long chunkKey = toChunkKeyFromPos(posLong);
         LongOpenHashSet chunkPositions = DAMAGE_POSITIONS_BY_CHUNK.get(chunkKey);
-        if (chunkPositions == null) {
-            return;
+        if (chunkPositions != null) {
+            chunkPositions.remove(posLong);
+            if (chunkPositions.isEmpty()) {
+                DAMAGE_POSITIONS_BY_CHUNK.remove(chunkKey);
+            }
         }
 
-        chunkPositions.remove(posLong);
-        if (chunkPositions.isEmpty()) {
-            DAMAGE_POSITIONS_BY_CHUNK.remove(chunkKey);
-        }
-
-        long sectionKey = toSectionKeyFromPos(posLong);
         LongOpenHashSet sectionPositions = DAMAGE_POSITIONS_BY_SECTION.get(sectionKey);
-        if (sectionPositions == null) {
-            return;
-        }
-        sectionPositions.remove(posLong);
-        if (sectionPositions.isEmpty()) {
-            DAMAGE_POSITIONS_BY_SECTION.remove(sectionKey);
+        if (sectionPositions != null) {
+            sectionPositions.remove(posLong);
+            if (sectionPositions.isEmpty()) {
+                DAMAGE_POSITIONS_BY_SECTION.remove(sectionKey);
+            }
         }
     }
 
@@ -191,6 +254,7 @@ public final class CannonBlockDamageOverlayState {
             return;
         }
 
+        DIRTY_SECTIONS.add(sectionKey);
         long[] posLongs = sectionPositions.toLongArray();
         for (long posLong : posLongs) {
             removeDamageState(posLong);

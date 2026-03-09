@@ -24,6 +24,13 @@ subprojects {
     }
 
     repositories {
+        mavenLocal()
+        if (rootProject.hasProperty("krakk_maven_url")) {
+            def krakkMavenUrl = rootProject.krakk_maven_url?.toString()?.trim()
+            if (krakkMavenUrl) {
+                maven { url = uri(krakkMavenUrl) }
+            }
+        }
         // Add repositories to retrieve artifacts from in here.
         // You should only use this when depending on other mods because
         // Loom adds the essential maven repositories to download Minecraft and libraries from automatically.

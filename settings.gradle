@@ -12,3 +12,11 @@ rootProject.name = 'cannonical'
 include 'common'
 include 'fabric'
 include 'forge'
+
+def krakkCheckoutPath = startParameter.projectProperties.get("krakkCheckoutPath")
+if (krakkCheckoutPath == null || krakkCheckoutPath.trim().isEmpty()) {
+    krakkCheckoutPath = "krakk"
+}
+if (file(krakkCheckoutPath).exists()) {
+    includeBuild(krakkCheckoutPath)
+}

@@ -22,7 +22,8 @@
     ]
   },
   "mixins": [
-    "cannonical.mixins.json"
+    "cannonical.mixins.json",
+    "krakk.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=0.18.4",
