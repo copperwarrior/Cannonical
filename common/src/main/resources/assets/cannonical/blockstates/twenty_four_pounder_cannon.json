@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "cannonical:block/twenty_four_pounder_cannon" },
+    "facing=east": { "model": "cannonical:block/twenty_four_pounder_cannon", "y": 90 },
+    "facing=south": { "model": "cannonical:block/twenty_four_pounder_cannon", "y": 180 },
+    "facing=west": { "model": "cannonical:block/twenty_four_pounder_cannon", "y": 270 }
+  }
+}

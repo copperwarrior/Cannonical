@@ -1,0 +1,18 @@
+{
+  "item.cannonical.cannonball": "Cannonball",
+  "item.cannonical.mallet": "Wooden Mallet",
+  "item.cannonical.stone_mallet": "Stone Mallet",
+  "item.cannonical.copper_mallet": "Copper Mallet",
+  "item.cannonical.iron_mallet": "Iron Mallet",
+  "item.cannonical.gold_mallet": "Gold Mallet",
+  "item.cannonical.diamond_mallet": "Diamond Mallet",
+  "item.cannonical.netherite_mallet": "Netherite Mallet",
+  "enchantment.cannonical.carpenter": "Carpenter",
+  "block.cannonical.twenty_four_pounder_cannon": "24-Pounder Cannon",
+  "item.cannonical.twenty_four_pounder_cannon": "24-Pounder Cannon",
+  "block.cannonical.gunpowder_barrel": "Gunpowder Barrel",
+  "item.cannonical.gunpowder_barrel": "Gunpowder Barrel",
+  "entity.cannonical.cannonball_projectile": "Cannonball",
+  "entity.cannonical.gunpowder_barrel_primed": "Primed Gunpowder Barrel",
+  "itemGroup.cannonical.main": "Cannonical"
+}

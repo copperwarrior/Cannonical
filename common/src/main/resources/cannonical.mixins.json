@@ -4,8 +4,15 @@
   "compatibilityLevel": "JAVA_17",
   "minVersion": "0.8",
   "client": [
+    "client.LevelRendererMixin"
   ],
   "mixins": [
+    "common.ChunkMapMixin",
+    "common.FallingBlockEntityMixin",
+    "common.LevelChunkMixin",
+    "common.LevelMixin",
+    "common.PistonMovingBlockEntityMixin",
+    "common.ServerPlayerGameModeMixin"
   ],
   "injectors": {
     "defaultRequire": 1
