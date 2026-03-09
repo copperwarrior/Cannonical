@@ -1,0 +1,3 @@
+[submodule "krakk"]
+	path = krakk
+	url = https://github.com/copperwarrior/Krakk.git
