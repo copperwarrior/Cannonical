@@ -8,13 +8,11 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import org.shipwrights.cannonical.Cannonical;
 import org.shipwrights.cannonical.client.CannonBlockDamageOverlayState;
 import org.shipwrights.cannonical.content.explosive.GunpowderBarrelBlock;
 import org.shipwrights.cannonical.registry.ModBlocks;
 import org.shipwrights.krakk.api.KrakkApi;
 import org.shipwrights.krakk.api.client.KrakkClientOverlayApi;
-import org.shipwrights.krakk.network.KrakkBlockDamageNetwork;
 import org.shipwrights.krakk.runtime.explosion.KrakkExplosionRuntime;
 
 public final class CannonicalKrakkBridge {
@@ -23,7 +21,6 @@ public final class CannonicalKrakkBridge {
 
     public static void init() {
         KrakkApi.setClientOverlayApi(new CannonicalClientOverlayApi());
-        KrakkApi.setNetworkApi(new KrakkBlockDamageNetwork(Cannonical.MOD_ID));
         KrakkExplosionRuntime.setSpecialBlockHandler(CannonicalKrakkBridge::handleSpecialExplosionBlock);
     }
 

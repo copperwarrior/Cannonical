@@ -18,5 +18,11 @@ if (krakkCheckoutPath == null || krakkCheckoutPath.trim().isEmpty()) {
     krakkCheckoutPath = "krakk"
 }
 if (file(krakkCheckoutPath).exists()) {
-    includeBuild(krakkCheckoutPath)
+    include 'krakkCommon'
+    include 'krakkFabric'
+    include 'krakkForge'
+
+    project(':krakkCommon').projectDir = file("${krakkCheckoutPath}/common")
+    project(':krakkFabric').projectDir = file("${krakkCheckoutPath}/fabric")
+    project(':krakkForge').projectDir = file("${krakkCheckoutPath}/forge")
 }

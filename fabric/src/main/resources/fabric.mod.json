@@ -22,15 +22,15 @@
     ]
   },
   "mixins": [
-    "cannonical.mixins.json",
-    "krakk.mixins.json"
+    "cannonical.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=0.18.4",
     "minecraft": "~1.20.1",
     "java": ">=17",
     "architectury": ">=9.2.14",
-    "fabric-api": "*"
+    "fabric-api": "*",
+    "krakk": "*"
   },
   "suggests": {
     "another-mod": "*"

@@ -10,6 +10,9 @@ dependencies {
 
     modImplementation "dev.architectury:architectury:$rootProject.architectury_api_version"
 
-    def krakkCoordinate = "${rootProject.krakk_group}:${rootProject.krakk_artifact}:${rootProject.krakk_version}"
-    implementation krakkCoordinate
+    if (findProject(":krakkCommon") != null) {
+        implementation(project(path: ":krakkCommon", configuration: "namedElements")) { transitive false }
+    } else {
+        implementation("${rootProject.krakk_group}:krakk-common:${rootProject.krakk_version}") { transitive false }
+    }
 }

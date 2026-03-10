@@ -13,7 +13,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.shipwrights.cannonical.Cannonical;
 import org.shipwrights.cannonical.content.projectile.CannonballProjectileEntity;
-import org.shipwrights.krakk.api.KrakkApi;
 
 public final class CannonicalNetwork {
     private static final ResourceLocation CANNONBALL_PRECISE_SYNC_PACKET =
@@ -63,8 +62,6 @@ public final class CannonicalNetwork {
                 }
             });
         });
-
-        KrakkApi.network().initClientReceivers();
     }
 
     public static void sendCannonballPreciseSync(ServerLevel level, CannonballProjectileEntity cannonball, int sequence, boolean forcePosition) {

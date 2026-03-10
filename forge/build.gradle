@@ -5,7 +5,6 @@ plugins {
 loom {
     forge {
         mixinConfig "cannonical.mixins.json"
-        mixinConfig "krakk.mixins.json"
     }
 }
 
@@ -32,16 +31,18 @@ configurations {
 }
 
 dependencies {
-    def krakkCoordinate = "${rootProject.krakk_group}:${rootProject.krakk_artifact}:${rootProject.krakk_version}"
-
     forge "net.minecraftforge:forge:$rootProject.forge_version"
 
     modImplementation "dev.architectury:architectury-forge:$rootProject.architectury_api_version"
+    if (findProject(":krakkForge") != null) {
+        modImplementation(project(path: ":krakkForge", configuration: "namedElements")) { transitive false }
+        implementation(project(path: ":krakkCommon", configuration: "transformProductionForge")) { transitive false }
+    } else {
+        modImplementation("${rootProject.krakk_group}:krakk-forge:${rootProject.krakk_version}") { transitive false }
+    }
 
     common(project(path: ':common', configuration: 'namedElements')) { transitive false }
-    common(krakkCoordinate) { transitive false }
     shadowBundle project(path: ':common', configuration: 'transformProductionForge')
-    shadowBundle krakkCoordinate
 }
 
 processResources {
