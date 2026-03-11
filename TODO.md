@@ -1,2 +1,5 @@
-Profile entity explosion damage
-Cross dimensional explosions
+# TODO
+
+## Pending
+- Volumetric explosion calculation.
+- Cross dimensional explosions.
