@@ -13,6 +13,7 @@ import org.shipwrights.cannonical.content.explosive.GunpowderBarrelBlock;
 import org.shipwrights.cannonical.registry.ModBlocks;
 import org.shipwrights.krakk.api.KrakkApi;
 import org.shipwrights.krakk.api.client.KrakkClientOverlayApi;
+import org.shipwrights.krakk.runtime.damage.KrakkDamageRuntime;
 import org.shipwrights.krakk.runtime.explosion.KrakkExplosionRuntime;
 
 public final class CannonicalKrakkBridge {
@@ -20,7 +21,9 @@ public final class CannonicalKrakkBridge {
     }
 
     public static void init() {
+        CannonicalDamageBlockConversions.init();
         KrakkApi.setClientOverlayApi(new CannonicalClientOverlayApi());
+        KrakkDamageRuntime.setDamageStateConversionHandler(CannonicalDamageBlockConversions::applyConversionForDamageState);
         KrakkExplosionRuntime.setSpecialBlockHandler(CannonicalKrakkBridge::handleSpecialExplosionBlock);
     }
 
@@ -51,6 +54,12 @@ public final class CannonicalKrakkBridge {
         public void applySection(ResourceLocation dimensionId, int sectionX, int sectionY, int sectionZ,
                                  Short2ByteOpenHashMap sectionStates) {
             CannonBlockDamageOverlayState.applySection(dimensionId, sectionX, sectionY, sectionZ, sectionStates);
+        }
+
+        @Override
+        public void applySectionDelta(ResourceLocation dimensionId, int sectionX, int sectionY, int sectionZ,
+                                      Short2ByteOpenHashMap sectionStates) {
+            CannonBlockDamageOverlayState.applySectionDelta(dimensionId, sectionX, sectionY, sectionZ, sectionStates);
         }
 
         @Override

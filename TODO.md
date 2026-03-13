@@ -1,5 +1,5 @@
 # TODO
 
 ## Pending
-- Volumetric explosion calculation.
-- Cross dimensional explosions.
+- [ ] Cross dimensional explosions.
+- [ ] Heat value for damage + detonations to determine various effects

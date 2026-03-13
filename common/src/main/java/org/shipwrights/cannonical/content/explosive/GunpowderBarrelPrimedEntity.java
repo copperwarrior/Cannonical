@@ -1,5 +1,6 @@
 package org.shipwrights.cannonical.content.explosive;
 
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
@@ -9,16 +10,29 @@ import net.minecraft.world.entity.item.PrimedTnt;
 import net.minecraft.world.level.Level;
 import org.shipwrights.cannonical.registry.ModEntityTypes;
 import org.shipwrights.krakk.api.KrakkApi;
+import org.shipwrights.krakk.api.explosion.KrakkExplosionProfile;
 
 public class GunpowderBarrelPrimedEntity extends PrimedTnt {
+    private static final String TAG_GUNPOWDER_CHARGE = "GunpowderCharge";
+    private static final double BASE_VOLUMETRIC_RADIUS = 2.7D;
+    private static final double RADIUS_PER_GUNPOWDER = 0.47D;
+    private static final double BASE_VOLUMETRIC_ENERGY = 4.0D;
+    private static final double ENERGY_PER_GUNPOWDER = 8.0D;
+
     private LivingEntity barrelOwner;
+    private int gunpowderCharge;
 
     public GunpowderBarrelPrimedEntity(EntityType<? extends PrimedTnt> entityType, Level level) {
         super(entityType, level);
         this.barrelOwner = null;
+        this.gunpowderCharge = 0;
     }
 
     public GunpowderBarrelPrimedEntity(Level level, double x, double y, double z, LivingEntity owner) {
+        this(level, x, y, z, owner, 0);
+    }
+
+    public GunpowderBarrelPrimedEntity(Level level, double x, double y, double z, LivingEntity owner, int gunpowderCharge) {
         super(ModEntityTypes.GUNPOWDER_BARREL_PRIMED.get(), level);
         this.setPos(x, y, z);
         double randomAngle = level.random.nextDouble() * (Math.PI * 2.0D);
@@ -28,6 +42,7 @@ public class GunpowderBarrelPrimedEntity extends PrimedTnt {
         this.yo = y;
         this.zo = z;
         this.barrelOwner = owner;
+        this.gunpowderCharge = sanitizeCharge(gunpowderCharge);
     }
 
     @Override
@@ -47,6 +62,8 @@ public class GunpowderBarrelPrimedEntity extends PrimedTnt {
         if (nextFuse <= 0) {
             this.discard();
             if (this.level() instanceof ServerLevel serverLevel) {
+                double blastRadius = BASE_VOLUMETRIC_RADIUS + (this.gunpowderCharge * RADIUS_PER_GUNPOWDER);
+                double blastEnergy = BASE_VOLUMETRIC_ENERGY + (this.gunpowderCharge * ENERGY_PER_GUNPOWDER);
                 KrakkApi.explosions().detonate(
                         serverLevel,
                         this.getX(),
@@ -54,7 +71,7 @@ public class GunpowderBarrelPrimedEntity extends PrimedTnt {
                         this.getZ(),
                         this,
                         this.barrelOwner,
-                        null
+                        KrakkExplosionProfile.volumetric(blastRadius, blastEnergy)
                 );
             }
         } else {
@@ -65,4 +82,19 @@ public class GunpowderBarrelPrimedEntity extends PrimedTnt {
         }
     }
 
+    @Override
+    protected void addAdditionalSaveData(CompoundTag compoundTag) {
+        super.addAdditionalSaveData(compoundTag);
+        compoundTag.putInt(TAG_GUNPOWDER_CHARGE, this.gunpowderCharge);
+    }
+
+    @Override
+    protected void readAdditionalSaveData(CompoundTag compoundTag) {
+        super.readAdditionalSaveData(compoundTag);
+        this.gunpowderCharge = sanitizeCharge(compoundTag.getInt(TAG_GUNPOWDER_CHARGE));
+    }
+
+    private static int sanitizeCharge(int value) {
+        return Math.max(0, Math.min(GunpowderBarrelBlock.MAX_GUNPOWDER_CHARGE, value));
+    }
 }

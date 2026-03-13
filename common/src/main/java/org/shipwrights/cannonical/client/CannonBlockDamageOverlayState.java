@@ -167,6 +167,34 @@ public final class CannonBlockDamageOverlayState {
         }
     }
 
+    public static void applySectionDelta(ResourceLocation dimensionId, int sectionX, int sectionY, int sectionZ, Short2ByteOpenHashMap sectionStates) {
+        synchronized (LOCK) {
+            if (!dimensionId.equals(activeDimensionId)) {
+                clearAll();
+                activeDimensionId = dimensionId;
+            }
+
+            for (Short2ByteMap.Entry entry : sectionStates.short2ByteEntrySet()) {
+                int localIndex = entry.getShortKey() & 0x0FFF;
+                int localX = localIndex & 15;
+                int localZ = (localIndex >> 4) & 15;
+                int localY = (localIndex >> 8) & 15;
+
+                int blockX = (sectionX << 4) | localX;
+                int blockY = (sectionY << 4) | localY;
+                int blockZ = (sectionZ << 4) | localZ;
+                long posLong = BlockPos.asLong(blockX, blockY, blockZ);
+
+                int clampedState = Math.max(0, Math.min(15, entry.getByteValue()));
+                if (clampedState <= 0) {
+                    removeDamageState(posLong);
+                } else {
+                    putDamageState(posLong, (byte) clampedState);
+                }
+            }
+        }
+    }
+
     public static void clearChunk(ResourceLocation dimensionId, int chunkX, int chunkZ) {
         synchronized (LOCK) {
             if (activeDimensionId == null || !activeDimensionId.equals(dimensionId)) {

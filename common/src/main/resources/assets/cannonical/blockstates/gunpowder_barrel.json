@@ -1,10 +1,9 @@
 {
-  "variants": {
-    "unstable=false": {
-      "model": "cannonical:block/gunpowder_barrel"
-    },
-    "unstable=true": {
-      "model": "cannonical:block/gunpowder_barrel"
+  "multipart": [
+    {
+      "apply": {
+        "model": "cannonical:block/gunpowder_barrel"
+      }
     }
-  }
+  ]
 }
