@@ -39,10 +39,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(LevelRenderer.class)
 public abstract class LevelRendererMixin {
     @Unique
-    private static final int CANNONICAL_CHUNK_PADDING = 2;
-    @Unique
-    private static final double CANNONICAL_MAX_RENDER_DISTANCE_SQR = 1024.0D;
-    @Unique
     private static final int CANNONICAL_MAX_SECTION_REBUILDS_PER_FRAME = 8;
     @Unique
     private static final long CANNONICAL_CACHE_SWEEP_INTERVAL_TICKS = 40L;
@@ -139,16 +135,16 @@ public abstract class LevelRendererMixin {
 
         BlockRenderDispatcher blockRenderer = minecraft.getBlockRenderer();
         this.cannonical$rebuildDirtySections(level, blockRenderer);
-        this.cannonical$sweepFarCacheEntries(level, camera);
 
         Vec3 cameraPos = camera.getPosition();
         int cameraChunkX = Mth.floor(cameraPos.x) >> 4;
         int cameraChunkZ = Mth.floor(cameraPos.z) >> 4;
-        int renderDistanceChunks = minecraft.options.getEffectiveRenderDistance() + CANNONICAL_CHUNK_PADDING;
+        int renderDistanceChunks = minecraft.options.getEffectiveRenderDistance();
         int minChunkX = cameraChunkX - renderDistanceChunks;
         int maxChunkX = cameraChunkX + renderDistanceChunks;
         int minChunkZ = cameraChunkZ - renderDistanceChunks;
         int maxChunkZ = cameraChunkZ + renderDistanceChunks;
+        this.cannonical$sweepFarCacheEntries(level, minChunkX, maxChunkX, minChunkZ, maxChunkZ);
 
         for (int stage = 1; stage <= 9; stage++) {
             RenderType renderType = ModelBakery.DESTROY_TYPES.get(stage);
@@ -156,9 +152,6 @@ public abstract class LevelRendererMixin {
 
             for (SectionRenderCache cache : this.cannonical$sectionCaches.values()) {
                 if (!cache.inChunkRange(minChunkX, maxChunkX, minChunkZ, maxChunkZ)) {
-                    continue;
-                }
-                if (cache.distanceToSqr(cameraPos.x, cameraPos.y, cameraPos.z) > CANNONICAL_MAX_RENDER_DISTANCE_SQR) {
                     continue;
                 }
 
@@ -309,7 +302,11 @@ public abstract class LevelRendererMixin {
     }
 
     @Unique
-    private void cannonical$sweepFarCacheEntries(ClientLevel level, Camera camera) {
+    private void cannonical$sweepFarCacheEntries(ClientLevel level,
+                                                 int minChunkX,
+                                                 int maxChunkX,
+                                                 int minChunkZ,
+                                                 int maxChunkZ) {
         long gameTick = level.getGameTime();
         if (this.cannonical$lastCacheSweepTick != Long.MIN_VALUE
                 && (gameTick - this.cannonical$lastCacheSweepTick) < CANNONICAL_CACHE_SWEEP_INTERVAL_TICKS) {
@@ -317,8 +314,6 @@ public abstract class LevelRendererMixin {
         }
         this.cannonical$lastCacheSweepTick = gameTick;
 
-        Vec3 cameraPos = camera.getPosition();
-        double maxKeepDistanceSqr = CANNONICAL_MAX_RENDER_DISTANCE_SQR * 4.0D;
         LongIterator iterator = this.cannonical$sectionCaches.keySet().iterator();
         while (iterator.hasNext()) {
             long sectionKey = iterator.nextLong();
@@ -328,7 +323,7 @@ public abstract class LevelRendererMixin {
                 continue;
             }
 
-            if (cache.distanceToSqr(cameraPos.x, cameraPos.y, cameraPos.z) <= maxKeepDistanceSqr) {
+            if (cache.inChunkRange(minChunkX, maxChunkX, minChunkZ, maxChunkZ)) {
                 continue;
             }
 
@@ -346,9 +341,6 @@ public abstract class LevelRendererMixin {
         private final int originBlockX;
         private final int originBlockY;
         private final int originBlockZ;
-        private final double centerX;
-        private final double centerY;
-        private final double centerZ;
         private final VertexBuffer[] stageBuffers = new VertexBuffer[10];
 
         private SectionRenderCache(long sectionKey) {
@@ -359,9 +351,6 @@ public abstract class LevelRendererMixin {
             this.originBlockX = this.sectionX << 4;
             this.originBlockY = this.sectionY << 4;
             this.originBlockZ = this.sectionZ << 4;
-            this.centerX = (this.sectionX << 4) + 8.0D;
-            this.centerY = (this.sectionY << 4) + 8.0D;
-            this.centerZ = (this.sectionZ << 4) + 8.0D;
         }
 
         private int originBlockX() {
@@ -408,13 +397,6 @@ public abstract class LevelRendererMixin {
         private boolean inChunkRange(int minChunkX, int maxChunkX, int minChunkZ, int maxChunkZ) {
             return this.sectionX >= minChunkX && this.sectionX <= maxChunkX
                     && this.sectionZ >= minChunkZ && this.sectionZ <= maxChunkZ;
-        }
-
-        private double distanceToSqr(double x, double y, double z) {
-            double dx = this.centerX - x;
-            double dy = this.centerY - y;
-            double dz = this.centerZ - z;
-            return (dx * dx) + (dy * dy) + (dz * dz);
         }
 
         private void close() {

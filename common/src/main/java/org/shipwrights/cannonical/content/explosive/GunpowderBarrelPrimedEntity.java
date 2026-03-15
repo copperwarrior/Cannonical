@@ -10,14 +10,11 @@ import net.minecraft.world.entity.item.PrimedTnt;
 import net.minecraft.world.level.Level;
 import org.shipwrights.cannonical.registry.ModEntityTypes;
 import org.shipwrights.krakk.api.KrakkApi;
-import org.shipwrights.krakk.api.explosion.KrakkExplosionProfile;
 
 public class GunpowderBarrelPrimedEntity extends PrimedTnt {
     private static final String TAG_GUNPOWDER_CHARGE = "GunpowderCharge";
-    private static final double BASE_VOLUMETRIC_RADIUS = 2.7D;
-    private static final double RADIUS_PER_GUNPOWDER = 0.47D;
-    private static final double BASE_VOLUMETRIC_ENERGY = 4.0D;
-    private static final double ENERGY_PER_GUNPOWDER = 8.0D;
+    // TNT reference: vanilla TNT is roughly equivalent to Krakk power=25.
+    private static final double TNT_EQUIVALENT_POWER = 25.0D;
 
     private LivingEntity barrelOwner;
     private int gunpowderCharge;
@@ -62,8 +59,10 @@ public class GunpowderBarrelPrimedEntity extends PrimedTnt {
         if (nextFuse <= 0) {
             this.discard();
             if (this.level() instanceof ServerLevel serverLevel) {
-                double blastRadius = BASE_VOLUMETRIC_RADIUS + (this.gunpowderCharge * RADIUS_PER_GUNPOWDER);
-                double blastEnergy = BASE_VOLUMETRIC_ENERGY + (this.gunpowderCharge * ENERGY_PER_GUNPOWDER);
+                if (this.gunpowderCharge <= 0) {
+                    return;
+                }
+                double blastPower = TNT_EQUIVALENT_POWER * this.gunpowderCharge;
                 KrakkApi.explosions().detonate(
                         serverLevel,
                         this.getX(),
@@ -71,7 +70,7 @@ public class GunpowderBarrelPrimedEntity extends PrimedTnt {
                         this.getZ(),
                         this,
                         this.barrelOwner,
-                        KrakkExplosionProfile.volumetric(blastRadius, blastEnergy)
+                        blastPower
                 );
             }
         } else {
