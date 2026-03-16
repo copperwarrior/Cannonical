@@ -35,7 +35,7 @@ dependencies {
 
     modImplementation "dev.architectury:architectury-forge:$rootProject.architectury_api_version"
     if (findProject(":krakkForge") != null) {
-        modImplementation(project(path: ":krakkForge", configuration: "namedElements")) { transitive false }
+        runtimeOnly(project(path: ":krakkForge", configuration: "namedElements")) { transitive false }
         implementation(project(path: ":krakkCommon", configuration: "transformProductionForge")) { transitive false }
     } else {
         modImplementation("${rootProject.krakk_group}:krakk-forge:${rootProject.krakk_version}") { transitive false }

@@ -7,6 +7,17 @@ architectury {
     fabric()
 }
 
+repositories {
+    mavenCentral()
+    maven {
+        name = "Modrinth"
+        url = uri("https://api.modrinth.com/maven")
+        content {
+            includeGroup("maven.modrinth")
+        }
+    }
+}
+
 configurations {
     common {
         canBeResolved = true
@@ -28,10 +39,17 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:$rootProject.fabric_loader_version"
 
     modImplementation "net.fabricmc.fabric-api:fabric-api:$rootProject.fabric_api_version"
+    modImplementation "maven.modrinth:sodium:$rootProject.sodium_version"
+    modImplementation "maven.modrinth:iris:$rootProject.iris_version"
+    // Iris 1.6.x remapped dev jars may not load nested META-INF/jars entries in this workspace setup.
+    runtimeOnly "org.anarres:jcpp:1.4.14"
+    runtimeOnly "org.antlr:antlr4-runtime:4.11.1"
+    runtimeOnly "io.github.douira:glsl-transformer:2.0.0-pre13"
 
     modImplementation "dev.architectury:architectury-fabric:$rootProject.architectury_api_version"
     if (findProject(":krakkFabric") != null) {
-        modImplementation(project(path: ":krakkFabric", configuration: "namedElements")) { transitive false }
+        // Keep local Krakk Fabric on runtime classpath without forcing Loom to remap/read its dev jar during configuration.
+        runtimeOnly(project(path: ":krakkFabric", configuration: "namedElements")) { transitive false }
         // Krakk common mixin classes live in the transformed common output, not in the thin namedElements jar.
         implementation(project(path: ":krakkCommon", configuration: "transformProductionFabric")) { transitive false }
     } else {
