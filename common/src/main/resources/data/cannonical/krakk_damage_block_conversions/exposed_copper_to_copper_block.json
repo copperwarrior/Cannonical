@@ -1,5 +1,0 @@
-{
-  "source": "minecraft:exposed_copper",
-  "target": "minecraft:copper_block",
-  "damage_fraction": 0.40
-}

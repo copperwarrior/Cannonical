@@ -1,5 +1,0 @@
-{
-  "source": "minecraft:exposed_cut_copper",
-  "target": "minecraft:cut_copper",
-  "damage_fraction": 0.40
-}
