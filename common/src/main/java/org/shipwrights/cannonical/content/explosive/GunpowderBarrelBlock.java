@@ -58,6 +58,17 @@ public class GunpowderBarrelBlock extends TntBlock {
         level.gameEvent(igniter, GameEvent.PRIME_FUSE, blockPos);
     }
 
+    public boolean ignite(Level level, BlockPos blockPos, LivingEntity igniter) {
+        if (level.isClientSide) {
+            return false;
+        }
+
+        int chainFuse = level.random.nextInt(15) + 10;
+        prime(level, blockPos, igniter, chainFuse, getStoredCharge(level.getBlockState(blockPos)));
+        level.removeBlock(blockPos, false);
+        return true;
+    }
+
     @Override
     public void onPlace(BlockState state, Level level, BlockPos blockPos, BlockState oldState, boolean movedByPiston) {
         if (!oldState.is(state.getBlock()) && level.hasNeighborSignal(blockPos)) {
