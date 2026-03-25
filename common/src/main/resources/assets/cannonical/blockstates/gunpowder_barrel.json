@@ -1,8 +1,153 @@
 {
   "multipart": [
     {
+      "when": {
+        "closed": "true"
+      },
       "apply": {
-        "model": "cannonical:block/gunpowder_barrel"
+        "model": "cannonical:block/gunpowder_barrel_closed"
+      }
+    },
+    {
+      "when": {
+        "closed": "false",
+        "charge": "0"
+      },
+      "apply": {
+        "model": "cannonical:block/gunpowder_barrel_empty"
+      }
+    },
+    {
+      "when": {
+        "closed": "false",
+        "charge": "1"
+      },
+      "apply": {
+        "model": "cannonical:block/gunpowder_barrel_1"
+      }
+    },
+    {
+      "when": {
+        "closed": "false",
+        "charge": "2"
+      },
+      "apply": {
+        "model": "cannonical:block/gunpowder_barrel_2"
+      }
+    },
+    {
+      "when": {
+        "closed": "false",
+        "charge": "3"
+      },
+      "apply": {
+        "model": "cannonical:block/gunpowder_barrel_3"
+      }
+    },
+    {
+      "when": {
+        "closed": "false",
+        "charge": "4"
+      },
+      "apply": {
+        "model": "cannonical:block/gunpowder_barrel_4"
+      }
+    },
+    {
+      "when": {
+        "closed": "false",
+        "charge": "5"
+      },
+      "apply": {
+        "model": "cannonical:block/gunpowder_barrel_5"
+      }
+    },
+    {
+      "when": {
+        "closed": "false",
+        "charge": "6"
+      },
+      "apply": {
+        "model": "cannonical:block/gunpowder_barrel_6"
+      }
+    },
+    {
+      "when": {
+        "closed": "false",
+        "charge": "7"
+      },
+      "apply": {
+        "model": "cannonical:block/gunpowder_barrel_7"
+      }
+    },
+    {
+      "when": {
+        "closed": "false",
+        "burning": "true",
+        "charge": "1"
+      },
+      "apply": {
+        "model": "cannonical:block/gunpowder_barrel_fire_1"
+      }
+    },
+    {
+      "when": {
+        "closed": "false",
+        "burning": "true",
+        "charge": "2"
+      },
+      "apply": {
+        "model": "cannonical:block/gunpowder_barrel_fire_2"
+      }
+    },
+    {
+      "when": {
+        "closed": "false",
+        "burning": "true",
+        "charge": "3"
+      },
+      "apply": {
+        "model": "cannonical:block/gunpowder_barrel_fire_3"
+      }
+    },
+    {
+      "when": {
+        "closed": "false",
+        "burning": "true",
+        "charge": "4"
+      },
+      "apply": {
+        "model": "cannonical:block/gunpowder_barrel_fire_4"
+      }
+    },
+    {
+      "when": {
+        "closed": "false",
+        "burning": "true",
+        "charge": "5"
+      },
+      "apply": {
+        "model": "cannonical:block/gunpowder_barrel_fire_5"
+      }
+    },
+    {
+      "when": {
+        "closed": "false",
+        "burning": "true",
+        "charge": "6"
+      },
+      "apply": {
+        "model": "cannonical:block/gunpowder_barrel_fire_6"
+      }
+    },
+    {
+      "when": {
+        "closed": "false",
+        "burning": "true",
+        "charge": "7"
+      },
+      "apply": {
+        "model": "cannonical:block/gunpowder_barrel_fire_7"
       }
     }
   ]

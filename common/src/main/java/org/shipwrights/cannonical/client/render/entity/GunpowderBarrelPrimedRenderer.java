@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.entity.TntMinecartRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import org.shipwrights.cannonical.content.explosive.GunpowderBarrelBlock;
 import org.shipwrights.cannonical.content.explosive.GunpowderBarrelPrimedEntity;
 import org.shipwrights.cannonical.registry.ModBlocks;
 
@@ -42,7 +43,10 @@ public class GunpowderBarrelPrimedRenderer extends EntityRenderer<GunpowderBarre
         poseStack.mulPose(Axis.YP.rotationDegrees(90.0F));
         TntMinecartRenderer.renderWhiteSolidBlock(
                 this.blockRenderer,
-                ModBlocks.GUNPOWDER_BARREL.get().defaultBlockState(),
+                ModBlocks.GUNPOWDER_BARREL.get()
+                        .defaultBlockState()
+                        .setValue(GunpowderBarrelBlock.CLOSED, true)
+                        .setValue(GunpowderBarrelBlock.GUNPOWDER_CHARGE, GunpowderBarrelBlock.MAX_GUNPOWDER_CHARGE),
                 poseStack,
                 buffer,
                 packedLight,

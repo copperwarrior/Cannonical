@@ -1,3 +1,11 @@
 {
-  "parent": "cannonical:block/gunpowder_barrel"
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "north": "cannonical:block/gunpowder_barrel_side",
+    "east": "cannonical:block/gunpowder_barrel_side",
+    "south": "cannonical:block/gunpowder_barrel_side",
+    "west": "cannonical:block/gunpowder_barrel_side",
+    "up": "minecraft:block/barrel_top",
+    "down": "minecraft:block/barrel_bottom"
+  }
 }

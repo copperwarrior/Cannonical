@@ -11,6 +11,13 @@
       ],
       "conditions": [
         {
+          "condition": "minecraft:block_state_property",
+          "block": "cannonical:gunpowder_barrel",
+          "properties": {
+            "closed": "true"
+          }
+        },
+        {
           "condition": "minecraft:survives_explosion"
         }
       ]

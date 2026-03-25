@@ -27,7 +27,9 @@ public final class ModBlocks {
 
     public static final RegistrySupplier<GunpowderBarrelBlock> GUNPOWDER_BARREL =
             registerWithItem("gunpowder_barrel",
-                    () -> new GunpowderBarrelBlock(BlockBehaviour.Properties.copy(Blocks.TNT)));
+                    () -> new GunpowderBarrelBlock(BlockBehaviour.Properties.copy(Blocks.TNT)
+                            .noOcclusion()
+                            .lightLevel(GunpowderBarrelBlock::getBurningLightLevel)));
 
     private ModBlocks() {
     }
