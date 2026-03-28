@@ -40,6 +40,7 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import org.shipwrights.cannonical.registry.ModBlocks;
+import org.shipwrights.krakk.vs2.KrakkVS2Support;
 
 public class GunpowderBarrelBlock extends TntBlock implements SimpleWaterloggedBlock {
     private static final String TAG_GUNPOWDER_CHARGE = "GunpowderCharge";
@@ -78,8 +79,18 @@ public class GunpowderBarrelBlock extends TntBlock implements SimpleWaterloggedB
         if (level.isClientSide) {
             return;
         }
+        if (sanitizeCharge(gunpowderCharge) <= 0) {
+            return;
+        }
         BlockState state = level.getBlockState(blockPos);
         if (!isClosed(state) || isWaterlogged(state)) {
+            return;
+        }
+
+        // If the block is in the VS2 shipyard, translate position and rotation to world-space
+        // before spawning. The entity must be created in the game-world level, not the shipyard.
+        if (KrakkVS2Support.isPresent()
+                && CannonicalVS2BarrelPhysics.tryPrimeOnShip(level, blockPos, igniter, fuseTicks, sanitizeCharge(gunpowderCharge))) {
             return;
         }
 

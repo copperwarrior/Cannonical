@@ -15,4 +15,22 @@ dependencies {
     } else {
         implementation("${rootProject.krakk_group}:krakk-common:${rootProject.krakk_version}") { transitive false }
     }
+
+    // Valkyrien Skies 2 — optional at runtime; compile-only for physics entity integration.
+    // Loom does not resolve compileOnly transitives, so each artifact is declared explicitly.
+    def vs2Version = findProperty("vs2_version") ?: "2.4.10"
+    def vs2CoreVersion = findProperty("vs2_core_version") ?: "1.1.0+4a7e0044b9"
+    modCompileOnly("org.valkyrienskies:valkyrienskies-120-common:${vs2Version}") {
+        exclude group: "com.simibubi"
+        exclude group: "io.github.fabricators_of_create"
+        exclude group: "dev.engine-room"
+        exclude group: "dev.engine_room"
+    }
+    modCompileOnly("org.valkyrienskies.core:api:${vs2CoreVersion}") {
+        exclude group: "com.simibubi"
+    }
+    // Internal artifact: PhysicsEntityData, PhysicsEntityServer, VsiServerShipWorld, VsiCore.
+    modCompileOnly("org.valkyrienskies.core:internal:${vs2CoreVersion}") {
+        exclude group: "com.simibubi"
+    }
 }

@@ -40,11 +40,8 @@ dependencies {
 
     modImplementation "net.fabricmc.fabric-api:fabric-api:$rootProject.fabric_api_version"
     modImplementation "maven.modrinth:sodium:$rootProject.sodium_version"
-    modImplementation "maven.modrinth:iris:$rootProject.iris_version"
-    // Iris 1.6.x remapped dev jars may not load nested META-INF/jars entries in this workspace setup.
-    runtimeOnly "org.anarres:jcpp:1.4.14"
-    runtimeOnly "org.antlr:antlr4-runtime:4.11.1"
-    runtimeOnly "io.github.douira:glsl-transformer:2.0.0-pre13"
+    modLocalRuntime "maven.modrinth:iris:$rootProject.iris_version"
+    modLocalRuntime "maven.modrinth:indium:$rootProject.indium_version"
 
     modImplementation "dev.architectury:architectury-fabric:$rootProject.architectury_api_version"
     if (findProject(":krakkFabric") != null) {
@@ -58,6 +55,16 @@ dependencies {
 
     common(project(path: ':common', configuration: 'namedElements')) { transitive false }
     shadowBundle project(path: ':common', configuration: 'transformProductionFabric')
+
+    // Valkyrien Skies 2 — present in dev runs but not required at runtime for end users.
+    def vs2Version = findProperty("vs2_version") ?: "2.4.10"
+    modLocalRuntime("org.valkyrienskies:valkyrienskies-120-fabric:${vs2Version}") {
+        exclude group: "com.simibubi"
+        exclude group: "io.github.fabricators_of_create"
+        exclude group: "dev.engine-room"
+        exclude group: "dev.engine_room"
+        exclude group: "maven.modrinth", module: "sodium"
+    }
 }
 
 processResources {
